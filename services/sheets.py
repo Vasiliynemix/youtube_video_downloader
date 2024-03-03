@@ -17,7 +17,7 @@ class GoogleSheet:
     def __init__(self):
         pass
 
-    async def get_articles_and_youtube_urls(self, spreadsheet_id: str, ranges: list[str]) -> list[tuple[str, str]] | None:
+    async def get_articles_and_youtube_urls(self, spreadsheet_id: str, ranges):
         response = await self.__fetch_batches(spreadsheet_id, ranges)
 
         values = response.get('valueRanges', [])
@@ -35,7 +35,7 @@ class GoogleSheet:
 
         return zip(articles[1:], youtube_urls[1:])
 
-    async def __fetch_batches(self, spreadsheet_id: str, ranges: list[str]):
+    async def __fetch_batches(self, spreadsheet_id: str, ranges):
         return self._service.spreadsheets().values().batchGet(
             spreadsheetId=spreadsheet_id,
             ranges=ranges,

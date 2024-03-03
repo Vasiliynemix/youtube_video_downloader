@@ -19,7 +19,7 @@ async def db_start(connection) -> None:
         print(f"Ошибка при создании таблицы: {e}")
 
 
-async def set_product(connection, article_id: int, youtube_url: str | None) -> None:
+async def set_product(connection, article_id: int, youtube_url) -> None:
     try:
         with sqlite3.connect(DB_FILE, timeout=15000) as data:
             curs = data.cursor()
@@ -28,7 +28,7 @@ async def set_product(connection, article_id: int, youtube_url: str | None) -> N
         print(f"Ошибка при добавлении продукта: {e}")
 
 
-async def get_product(connection, article_id: int) -> tuple[int, str] | None:
+async def get_product(connection, article_id: int):
     try:
         with sqlite3.connect(DB_FILE, timeout=15000) as data:
             curs = data.cursor()
@@ -47,7 +47,7 @@ async def update_product(connection, article_id: int, youtube_url: str) -> None:
         print(f"Ошибка при обновлении продукта: {e}")
 
 
-async def get_products(connection) -> list[tuple[int, str]]:
+async def get_products(connection):
     try:
         async with connection.execute('SELECT article, youtube_url FROM products') as cursor:
             return await cursor.fetchall()
