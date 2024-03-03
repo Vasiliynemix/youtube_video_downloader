@@ -9,8 +9,8 @@ load_dotenv()
 class GoogleConfig:
     auth_file_name: str = os.getenv("GOOGLE_AUTH_FILE_NAME")
     spreadsheet_id: str = os.getenv("SPREADSHEET_ID")
-    scopes: list[str] = ["https://www.googleapis.com/auth/spreadsheets",
-                         "https://www.googleapis.com/auth/drive"]
+    scopes = ["https://www.googleapis.com/auth/spreadsheets",
+              "https://www.googleapis.com/auth/drive"]
 
 
 class VideoConfig:
