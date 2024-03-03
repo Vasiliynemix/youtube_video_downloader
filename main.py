@@ -22,6 +22,12 @@ async def download_video(db_conn: Pool, article_id: str, video_url: str, i: int)
 
     except Exception as e:
         print(f"Error downloading video {i} ({article_id}): {e}")
+        if hasattr(yt, 'streamingData'):
+            print(f"streamingData is available: {yt.streamingData}")
+        else:
+            print("streamingData is not available.")
+        if stream:
+            print(f"Stream information: {stream}")
 
 
 async def main():
