@@ -15,7 +15,7 @@ async def download_video(db_conn: Pool, article_id: str, video_url: str, i: int)
 
         stream = yt.streams.filter(progressive=True, file_extension="mp4").last()
         if stream:
-            await asyncio.to_thread(stream.download, output_path=cfg.paths.path_to_video_dir, filename=f"{article_id}")
+            await asyncio.to_thread(stream.download, output_path=cfg.paths.path_to_video_dir, filename=f"{article_id}.mp4")
             print(f"Video {i} ({article_id}) downloaded in {stream.resolution} successfully.")
             await update_product(db_conn, int(article_id), video_url)
             return
