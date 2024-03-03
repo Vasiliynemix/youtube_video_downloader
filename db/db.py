@@ -1,15 +1,13 @@
 import sqlite3
 
-import aiosqlite
-
 DB_FILE = 'database.db'
 
 
-async def create_conn():
-    try:
-        return await aiosqlite.connect(DB_FILE)
-    except Exception as error:
-        print("Ошибка при создании соединения:", error)
+# async def create_conn():
+#     try:
+#         return await aiosqlite.connect(DB_FILE)
+#     except Exception as error:
+#         print("Ошибка при создании соединения:", error)
 
 
 async def db_start(connection) -> None:

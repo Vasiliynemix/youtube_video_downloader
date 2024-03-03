@@ -3,7 +3,7 @@ import asyncio
 from asyncpg import Pool
 from pytube import YouTube
 from config import cfg
-from db.db import create_conn, db_start, set_product, get_product, update_product
+from db.db import db_start, set_product, get_product, update_product
 from services.sheets import GoogleSheet
 from utils import is_valid_url
 
