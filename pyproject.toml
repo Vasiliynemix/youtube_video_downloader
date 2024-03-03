@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "youtube-video-downlad"
+version = "0.1.0"
+description = ""
+authors = ["Vasiliynemix <vasyanemix@gmail.com>"]
+readme = "README.md"
+packages = [{include = "youtube_video_downlad"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+google-api-python-client = "^2.120.0"
+oauth2client = "^4.1.3"
+python-dotenv = "^1.0.1"
+pytube = "^15.0.0"
+pip = "^24.0"
+install = "^1.3.5"
+tqdm = "^4.66.2"
+asyncpg = "^0.29.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
