@@ -25,7 +25,7 @@ async def download_video(db_conn: Pool, article_id: str, video_url: str, i: int)
 
 
 async def main():
-    db_conn = await create_conn()
+    db_conn = None
     await db_start(db_conn)
 
     google_sheets = GoogleSheet()

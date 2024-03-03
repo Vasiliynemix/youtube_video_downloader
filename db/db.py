@@ -1,62 +1,65 @@
-import asyncpg
-from asyncpg import Pool
+import sqlite3
 
-DB_USER = 'postgres_yt1'
-DB_PASSWORD = 'postgres_yt1'
-DB_NAME = 'postgres_yt1'
-DB_HOST = 'localhost'
+import aiosqlite
+
+DB_FILE = 'database.db'
 
 
 async def create_conn():
     try:
-        return await asyncpg.create_pool(f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5492/{DB_NAME}', max_size=200)
+        return await aiosqlite.connect(DB_FILE)
     except Exception as error:
-        print("Ошибка при создании пула соединений:", error)
+        print("Ошибка при создании соединения:", error)
 
 
-async def db_start(pool: Pool) -> None:
+async def db_start(connection) -> None:
     try:
-        async with pool.acquire() as conn:
-            await conn.execute('CREATE TABLE IF NOT EXISTS products (id SERIAL PRIMARY KEY, arcticle INTEGER UNIQUE NOT NULL, youtube_url TEXT)')
+        with sqlite3.connect(DB_FILE, timeout=15000) as data:
+            curs = data.cursor()
+            curs.execute('CREATE TABLE IF NOT EXISTS products (article INTEGER UNIQUE NOT NULL, youtube_url TEXT)')
     except Exception as e:
-        print(f"Error creating table: {e}")
+        print(f"Ошибка при создании таблицы: {e}")
 
 
-async def set_product(pool: Pool, article_id: int, youtube_url: str | None) -> None:
+async def set_product(connection, article_id: int, youtube_url: str | None) -> None:
     try:
-        async with pool.acquire() as conn:
-            await conn.execute('INSERT INTO products (arcticle, youtube_url) VALUES ($1, $2)', article_id, youtube_url)
+        with sqlite3.connect(DB_FILE, timeout=15000) as data:
+            curs = data.cursor()
+            curs.execute('INSERT INTO products (article, youtube_url) VALUES (?, ?)', (article_id, youtube_url))
     except Exception as e:
-        print(f"Error set product: {e}")
+        print(f"Ошибка при добавлении продукта: {e}")
 
 
-async def get_product(pool: Pool, article_id: int) -> tuple[int, str] | None:
+async def get_product(connection, article_id: int) -> tuple[int, str] | None:
     try:
-        async with pool.acquire() as conn:
-            return await conn.fetchrow('SELECT arcticle, youtube_url FROM products WHERE arcticle = $1', article_id)
+        with sqlite3.connect(DB_FILE, timeout=15000) as data:
+            curs = data.cursor()
+            curs.execute('SELECT article, youtube_url FROM products WHERE article = ?', (article_id,))
+            return curs.fetchone()
     except Exception as e:
-        print(f"Error get product: {e}")
+        print(f"Ошибка при получении продукта: {e}")
 
 
-async def update_product(pool: Pool, article_id: int, youtube_url: str) -> None:
+async def update_product(connection, article_id: int, youtube_url: str) -> None:
     try:
-        async with pool.acquire() as conn:
-            await conn.execute('UPDATE products SET youtube_url = $1 WHERE arcticle = $2', youtube_url, article_id)
+        with sqlite3.connect(DB_FILE, timeout=15000) as data:
+            curs = data.cursor()
+            curs.execute('UPDATE products SET youtube_url = ? WHERE article = ?', (youtube_url, article_id))
     except Exception as e:
-        print(f"Error update product: {e}")
+        print(f"Ошибка при обновлении продукта: {e}")
 
 
-async def get_products(pool: Pool) -> list[tuple[int, str]]:
+async def get_products(connection) -> list[tuple[int, str]]:
     try:
-        async with pool.acquire() as conn:
-            return await conn.fetch('SELECT arcticle, youtube_url FROM products')
+        async with connection.execute('SELECT article, youtube_url FROM products') as cursor:
+            return await cursor.fetchall()
     except Exception as e:
-        print(f"Error get products: {e}")
+        print(f"Ошибка при получении списка продуктов: {e}")
 
 
-async def delete_product(pool: Pool, article_id: int) -> None:
+async def delete_product(connection, article_id: int) -> None:
     try:
-        async with pool.acquire() as conn:
-            await conn.execute('DELETE FROM products WHERE arcticle = $1', article_id)
+        async with connection:
+            await connection.execute('DELETE FROM products WHERE article = ?', (article_id,))
     except Exception as e:
-        print(f"Error delete product: {e}")
+        print(f"Ошибка при удалении продукта: {e}")

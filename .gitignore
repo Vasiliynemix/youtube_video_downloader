@@ -1,4 +1,6 @@
 my-service*.json
+database.db
+video/
 
 # Editors
 .vscode/
