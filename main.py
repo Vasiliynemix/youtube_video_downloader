@@ -25,7 +25,7 @@
 import time
 
 
-async def main():
+def main():
     while True:
         print("qwertyuiuytrwq")
         time.sleep(5)
