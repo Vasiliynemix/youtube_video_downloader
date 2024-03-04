@@ -1,7 +1,6 @@
 import asyncio
-import threading
 from youtube_dl import YoutubeDL
-from config import cfg  # Подставьте свои настройки
+from config import cfg  # Replace with your config
 from db.db import update_product, db_start, get_product, set_product
 from services.sheets import GoogleSheet
 from utils import is_valid_url
@@ -26,18 +25,12 @@ def download_video(db_conn, article_id, video_url, i):
         print(f"Error downloading video {i} ({article_id}): {e}")
 
 
-def run_in_thread(func, *args, **kwargs):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    future = loop.run_in_executor(None, func, *args, **kwargs)
-    return loop.run_until_complete(future)
+async def download_video_async(db_conn, article_id, video_url, i):
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, download_video, db_conn, article_id, video_url, i)
 
 
-def download_video_async(db_conn, article_id, video_url, i):
-    run_in_thread(download_video, db_conn, article_id, video_url, i)
-
-
-def main():
+async def main():
     db_conn = None
     db_start(db_conn)
 
@@ -59,14 +52,14 @@ def main():
                     else:
                         if product[1] == video_url[0]:
                             continue
-                    tasks.append(lambda: download_video_async(db_conn, article_id[0], video_url[0], i))
+                    tasks.append(download_video_async(db_conn, article_id[0], video_url[0], i))
 
         for task in tasks:
-            task()
+            await task
 
         print("Sleeping...")
-        asyncio.sleep(20)
+        await asyncio.sleep(20)
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
