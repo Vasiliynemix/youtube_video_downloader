@@ -10,7 +10,7 @@ DB_FILE = 'database.db'
 #         print("Ошибка при создании соединения:", error)
 
 
-async def db_start(connection) -> None:
+def db_start(connection) -> None:
     try:
         with sqlite3.connect(DB_FILE, timeout=15000) as data:
             curs = data.cursor()
@@ -19,7 +19,7 @@ async def db_start(connection) -> None:
         print(f"Ошибка при создании таблицы: {e}")
 
 
-async def set_product(connection, article_id: int, youtube_url) -> None:
+def set_product(connection, article_id: int, youtube_url) -> None:
     try:
         with sqlite3.connect(DB_FILE, timeout=15000) as data:
             curs = data.cursor()
@@ -28,7 +28,7 @@ async def set_product(connection, article_id: int, youtube_url) -> None:
         print(f"Ошибка при добавлении продукта: {e}")
 
 
-async def get_product(connection, article_id: int):
+def get_product(connection, article_id: int):
     try:
         with sqlite3.connect(DB_FILE, timeout=15000) as data:
             curs = data.cursor()
@@ -38,26 +38,10 @@ async def get_product(connection, article_id: int):
         print(f"Ошибка при получении продукта: {e}")
 
 
-async def update_product(connection, article_id: int, youtube_url: str) -> None:
+def update_product(connection, article_id: int, youtube_url: str) -> None:
     try:
         with sqlite3.connect(DB_FILE, timeout=15000) as data:
             curs = data.cursor()
             curs.execute('UPDATE products SET youtube_url = ? WHERE article = ?', (youtube_url, article_id))
     except Exception as e:
         print(f"Ошибка при обновлении продукта: {e}")
-
-
-async def get_products(connection):
-    try:
-        async with connection.execute('SELECT article, youtube_url FROM products') as cursor:
-            return await cursor.fetchall()
-    except Exception as e:
-        print(f"Ошибка при получении списка продуктов: {e}")
-
-
-async def delete_product(connection, article_id: int) -> None:
-    try:
-        async with connection:
-            await connection.execute('DELETE FROM products WHERE article = ?', (article_id,))
-    except Exception as e:
-        print(f"Ошибка при удалении продукта: {e}")

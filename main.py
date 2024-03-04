@@ -25,6 +25,7 @@ def download_video(db_conn, article_id, video_url, i):
     except Exception as e:
         print(f"Error downloading video {i} ({article_id}): {e}")
 
+
 def run_in_thread(func, *args, **kwargs):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
