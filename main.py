@@ -25,6 +25,9 @@ async def download_video(db_conn, article_id: str, video_url: str, i: int):
 
 
 async def main():
+    while True:
+        print("qwertyuiuytrwq")
+        await asyncio.sleep(5)
     db_conn = None
     await db_start(db_conn)
 
