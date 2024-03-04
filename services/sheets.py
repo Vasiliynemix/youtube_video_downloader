@@ -1,5 +1,4 @@
 import httplib2
-from asyncpg import Pool
 from googleapiclient import discovery
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -17,8 +16,8 @@ class GoogleSheet:
     def __init__(self):
         pass
 
-    def get_articles_and_youtube_urls(self, spreadsheet_id: str, ranges):
-        response = self.__fetch_batches(spreadsheet_id, ranges)
+    async def get_articles_and_youtube_urls(self, spreadsheet_id: str, ranges: list[str]) -> list[tuple[str, str]] | None:
+        response = await self.__fetch_batches(spreadsheet_id, ranges)
 
         values = response.get('valueRanges', [])
 
@@ -35,7 +34,7 @@ class GoogleSheet:
 
         return zip(articles[1:], youtube_urls[1:])
 
-    def __fetch_batches(self, spreadsheet_id: str, ranges):
+    async def __fetch_batches(self, spreadsheet_id: str, ranges: list[str]):
         return self._service.spreadsheets().values().batchGet(
             spreadsheetId=spreadsheet_id,
             ranges=ranges,
