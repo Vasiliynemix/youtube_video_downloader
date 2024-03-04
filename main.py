@@ -1,28 +1,23 @@
 import asyncio
-from youtube_dl import YoutubeDL
-from config import cfg  # Replace with your config
+
+from pytube import YouTube
+from config import cfg
 from db.db import update_product, db_start, get_product, set_product
 from services.sheets import GoogleSheet
 from utils import is_valid_url
 
 
 def download_video(db_conn, article_id, video_url, i):
-    print(f"Downloading video {i} ({article_id})...")
+    print(f"Скачивание {i} видео...")
     try:
-        ydl_opts = {
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
-            'outtmpl': f"{cfg.paths.path_to_video_dir}/{article_id}.mp4"
-        }
-        with YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(video_url, download=False)
-            if info:
-                ydl.download([video_url])
-                print(f"Video {i} ({article_id}) downloaded successfully.")
-                update_product(db_conn, int(article_id), video_url)
-                return
-
+        yt = YouTube(video_url)
+        stream = yt.streams.filter(progressive=True, file_extension='mp4').last()
+        filename = f"{article_id}.mp4"
+        stream.download(output_path=cfg.paths.path_to_video_dir, filename=filename)
+        print("Видео успешно скачано!")
+        update_product(None, article_id, video_url)
     except Exception as e:
-        print(f"Error downloading video {i} ({article_id}): {e}")
+        print(f"Произошла ошибка при скачивании видео: {e}")
 
 
 async def download_video_async(db_conn, article_id, video_url, i):
